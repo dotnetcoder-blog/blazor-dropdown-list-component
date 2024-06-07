@@ -1,0 +1,47 @@
+﻿@typeparam TItem
+
+
+<CascadingValue Value="@this">
+    <div class="dropdown">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> OnSelected { get; set; }
+
+    public bool Show { get; private set; }
+
+    private object selectedValue;
+
+    public object SelectedValue {
+        get
+        { 
+            return this.selectedValue; 
+        }
+        set
+        {
+            this.selectedValue = value;
+            StateHasChanged(); 
+        }
+    }
+
+
+    public void Toggle()
+    {
+        Show = !Show;
+        StateHasChanged();
+    }
+
+    public async Task HandleSelect(TItem item, object selectedValue)
+    {
+        this.SelectedValue = selectedValue;
+        Show = false;
+        StateHasChanged();
+        await this.OnSelected.InvokeAsync(item);
+    }
+}

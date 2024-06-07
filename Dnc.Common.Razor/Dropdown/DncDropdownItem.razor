@@ -1,0 +1,74 @@
+﻿@using System.Linq.Expressions
+@typeparam TItem
+@typeparam TValue
+
+<div class="dropdown-item @CssSelected @isDisabled" data-value="@ItemValue" Item="@Item" @onclick="e=> DncDropdown.HandleSelect(Item, ItemValue)">
+    @if (HasChild)
+    {
+        @ChildContent(Item)
+    }
+    else
+    {
+        @ItemValue
+    }
+</div>
+
+
+@code {
+    [CascadingParameter]
+    public DncDropdown<TItem> DncDropdown { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; }
+
+    [Parameter]
+    public TItem Item { get; set; }
+
+    [Parameter]
+    public Expression<Func<TItem, TValue>> Value { get; set; }
+
+    [Parameter]
+    public bool Selected { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } 
+
+    private bool HasChild => ChildContent != null;
+
+    // disabled isn't a valid property for div
+    //You can emulate it using css:
+
+    private string isDisabled => Disabled ? "disabled" : "";
+
+    private object ItemValue => GetValue(Value);
+
+    private string CssSelected
+    {
+        get
+        {
+            if (DncDropdown.SelectedValue == null && Selected)
+            {
+                return "selected";
+            }
+            else
+            {
+                return ItemValue?.ToString() == DncDropdown.SelectedValue?.ToString() ? "selected" : "";
+            }
+
+        }
+    }
+
+    private object GetValue(Expression<Func<TItem, TValue>> expression)
+    {
+        var compiledExpression = expression.Compile();
+        try
+        {
+           return compiledExpression(Item);
+           
+        }
+        catch
+        {
+            return null;
+        }
+    }
+}

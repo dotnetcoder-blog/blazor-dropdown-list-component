@@ -1,0 +1,133 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<div class="container my-5">
+    <div class="row my-1">
+        <div class="col-2 dnc-align-left">
+            <div>Selected Language: <span class="dnc-red">@selectedLanguageSetting</span></div>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-2 dnc-align-left">
+            <div>Selected Setting: <span class="dnc-red">@selectedCallSetting</span></div>         
+        </div>
+        <div class="col-1"></div>
+        <div class="col-2 dnc-align-left">
+            <div>Selected Season: <span class="dnc-red">@selectedSeason</span></div>
+        </div>
+    </div>
+    <div class="row my-1">
+        <div class="col-2">
+            <DncDropdown TItem="Country" OnSelected="@HandleSelectedLanguage">
+                <DncDropdownButton TItem="Country"><i class="fas fa-language"></i> Language Settings</DncDropdownButton>
+                <DncDropdownMenu TItem="Country">
+                    @foreach (var country in countries)
+                    {
+                        <DncDropdownItem Item="@country" Value="(Country v) => v.Language">
+                            <div class="dnc-div">@context.Name<span class="dnc-span">@context.Language</span></div>
+                         </DncDropdownItem>
+                    }
+                </DncDropdownMenu>
+            </DncDropdown>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-2">
+            <DncDropdown TItem="string" OnSelected="@HandleSelectedCall">
+                <DncDropdownButton TItem="string"><i class="bi bi-gear"></i>Phone Settings</DncDropdownButton>
+                <DncDropdownMenu TItem="string">
+                    <DncDropdownItem Item="@list[0]" Value="(string v) => v"><i class="fas fa-bell"></i> @list[0]</DncDropdownItem>
+                    <DncDropdownItem Item="@list[1]" Value="(string v) => v" Selected="true"><i class="fas fa-bell-slash"></i> @list[1]</DncDropdownItem>
+                    <DncDropdownItem Item="@list[2]" Value="(string v) => v" Disabled="true"><i class="fas fa-dumbbell"></i> @list[2]</DncDropdownItem>
+                </DncDropdownMenu>
+            </DncDropdown>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-2">
+            <DncDropdown TItem="Season" OnSelected="@HandleSelectedSeason">
+                <DncDropdownButton TItem="Season">Select Season</DncDropdownButton>
+                <DncDropdownMenu TItem="Season">
+                    @foreach (var season in seasons)
+                    {
+                        <DncDropdownItem Item="season" Value="(Season v) => v"></DncDropdownItem>
+                    }
+                </DncDropdownMenu>
+            </DncDropdown>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    static List<Country> countries;
+    static List<string> list;
+
+     IEnumerable<Season> seasons = Enum.GetValues(typeof(Season)).Cast<Season>();
+
+    string selectedLanguageSetting = string.Empty;
+    string selectedCallSetting = "Silent";
+    string selectedSeason;
+
+    protected override void OnInitialized()
+    {
+        countries = new List<Country>
+        {
+         new Country{ Name = "USA", Language = "EN"},
+         new Country{ Name = "France", Language = "FR"},
+         new Country{ Name = "Egypt", Language = "AR"}     
+        };
+
+        list = new List<string> { "Ring", "Silent", "Vibrate" };
+    }
+
+    protected void HandleSelectedLanguage(Country  value)
+    {
+        this.selectedLanguageSetting = value?.Language;
+    }
+
+    protected void HandleSelectedCall(string value)
+    {
+        this.selectedCallSetting = value;
+    }   
+    
+    protected void HandleSelectedSeason(Season value)
+    {
+        this.selectedSeason = value.ToString();
+    }
+
+    public class Country
+    {
+        public string Name { get; set; }
+        public string Language { get; set; }
+    }
+
+    public enum Season
+    {
+        Spring = 0,
+        Summer = 1,
+        Autumn = 2,
+        Winter =3
+    }
+}
+
+
+
+<style>
+    .dnc-div{
+        display: flex
+    }
+
+    .dnc-span{
+        flex: 1;
+        text-align: right;
+        white-space: nowrap;
+    }
+    .dnc-red{
+        color:red;
+    }
+
+    .dnc-align-left {
+        height: 37px;
+        line-height: 37px;
+        text-align: left;
+    }
+</style>

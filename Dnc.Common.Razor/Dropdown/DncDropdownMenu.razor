@@ -1,0 +1,19 @@
+﻿@typeparam TItem
+
+@if (DncDropdown.Show)
+{
+    <div class="dropdown-menu show" aria-labelledby="dropdownMenuButton">
+        @ChildContent
+    </div>
+}
+
+
+
+@code {
+    [CascadingParameter]
+    public DncDropdown<TItem> DncDropdown { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+}
